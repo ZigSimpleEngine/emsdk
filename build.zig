@@ -24,7 +24,7 @@ pub fn getEmrunName(target: ResolvedTarget) []const u8 {
 }
 
 pub fn getIncludePath(b: *Build, emsdk_path: []const u8) []const u8 {
-    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "system", "include" });
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "cache", "sysroot", "include" });
 }
 
 pub fn getPathToEmcc(b: *Build, target: ResolvedTarget, emsdk_path: []const u8) []const u8 {
