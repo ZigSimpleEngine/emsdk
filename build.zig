@@ -23,12 +23,16 @@ pub fn getEmrunName(target: ResolvedTarget) []const u8 {
     return if (target.result.os.tag == .windows) "emrun.exe" else "emrun";
 }
 
-pub fn getPathToEmcc(b: *Build, target: ResolvedTarget, emsdkPath: []const u8) []const u8 {
-    return b.pathJoin(b, .{ emsdkPath, "upstream", "emscripten", getEmccName(target) });
+pub fn getIncludePath(b: *Build, emsdk_path: []const u8) []const u8 {
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "system", "include" });
 }
 
-pub fn getPathToEmrun(b: *Build, target: ResolvedTarget, emsdkPath: []const u8) []const u8 {
-    return b.pathJoin(b, .{ emsdkPath, "upstream", "emscripten", getEmrunName(target) });
+pub fn getPathToEmcc(b: *Build, target: ResolvedTarget, emsdk_path: []const u8) []const u8 {
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", getEmccName(target) });
+}
+
+pub fn getPathToEmrun(b: *Build, target: ResolvedTarget, emsdk_path: []const u8) []const u8 {
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", getEmrunName(target) });
 }
 
 pub const EmccLinkOptions = struct {
