@@ -43,6 +43,7 @@ pub const EmccLinkOptions = struct {
     emcc_path: []const u8,
     release_use_closure: bool = true,
     release_use_lto: bool = true,
+    use_asyncify: bool = true,
     use_webgpu: bool = false,
     use_webgl2: bool = false,
     use_emmalloc: bool = false,
@@ -69,6 +70,9 @@ pub fn emccLinkStep(b: *Build, options: EmccLinkOptions) !*Build.Step.InstallDir
         if (options.release_use_closure) {
             emcc.addArgs(&.{ "--closure", "1" });
         }
+    }
+    if (options.use_asyncify) {
+        emcc.addArg("-sASYNCIFY");
     }
     if (options.use_webgpu) {
         emcc.addArg("--use-port=emdawnwebgpu");

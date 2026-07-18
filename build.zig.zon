@@ -1,6 +1,6 @@
 .{
     .name = .emsdk,
-    .version = "0.0.3",
+    .version = "0.0.4",
     .fingerprint = 0xd3fae08480e2647e,
     .minimum_zig_version = "0.16.0",
     .dependencies = .{},
