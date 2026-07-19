@@ -35,6 +35,13 @@ pub fn getPathToEmrun(b: *Build, target: ResolvedTarget, emsdk_path: []const u8)
     return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", getEmrunName(target) });
 }
 
+pub fn Range(T: anytype) type {
+    return struct {
+        min: T,
+        max: T,
+    };
+}
+
 pub const EmccLinkOptions = struct {
     target: ResolvedTarget,
     optimize: OptimizeMode,
@@ -46,6 +53,7 @@ pub const EmccLinkOptions = struct {
     use_asyncify: bool = true,
     use_webgpu: bool = false,
     use_webgl2: bool = false,
+    webgl_version: Range(u32) = .{ .min = 2, .max = 2 },
     use_emmalloc: bool = false,
     use_filesystem: bool = true,
     shell_file_path: ?Build.LazyPath,
@@ -78,7 +86,8 @@ pub fn emccLinkStep(b: *Build, options: EmccLinkOptions) !*Build.Step.InstallDir
         emcc.addArg("--use-port=emdawnwebgpu");
     }
     if (options.use_webgl2) {
-        emcc.addArg("-sUSE_WEBGL2=1");
+        emcc.addArg(b.fmt("-sMIN_WEBGL_VERSION={}", .{options.webgl_version.min}));
+        emcc.addArg(b.fmt("-sMAX_WEBGL_VERSION={}", .{options.webgl_version.max}));
     }
     if (!options.use_filesystem) {
         emcc.addArg("-sNO_FILESYSTEM=1");
