@@ -15,24 +15,20 @@ pub fn getEmsdkPathFromEnv(b: *Build) []const u8 {
     }
 }
 
-pub fn getEmccName(target: ResolvedTarget) []const u8 {
-    return if (target.result.os.tag == .windows) "emcc.exe" else "emcc";
+pub fn getWebGPUIncludePath(b: *Build, emsdk_path: []const u8) std.Build.LazyPath {
+    return .{ .cwd_relative = b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "cache", "ports", "emdawnwebgpu", "emdawnwebgpu_pkg", "webgpu", "include" }) };
 }
 
-pub fn getEmrunName(target: ResolvedTarget) []const u8 {
-    return if (target.result.os.tag == .windows) "emrun.exe" else "emrun";
+pub fn getSysrootIncludePath(b: *Build, emsdk_path: []const u8) std.Build.LazyPath {
+    return .{ .cwd_relative = b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "cache", "sysroot", "include" }) };
 }
 
-pub fn getIncludePath(b: *Build, emsdk_path: []const u8) []const u8 {
-    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "cache", "sysroot", "include" });
+pub fn getPathToEmcc(b: *Build, emsdk_path: []const u8) []const u8 {
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "emcc" });
 }
 
-pub fn getPathToEmcc(b: *Build, target: ResolvedTarget, emsdk_path: []const u8) []const u8 {
-    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", getEmccName(target) });
-}
-
-pub fn getPathToEmrun(b: *Build, target: ResolvedTarget, emsdk_path: []const u8) []const u8 {
-    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", getEmrunName(target) });
+pub fn getPathToEmrun(b: *Build, emsdk_path: []const u8) []const u8 {
+    return b.pathJoin(&.{ emsdk_path, "upstream", "emscripten", "emrun" });
 }
 
 pub fn Range(T: anytype) type {
