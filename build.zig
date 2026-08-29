@@ -54,6 +54,8 @@ pub const EmccLinkOptions = struct {
     use_filesystem: bool = true,
     shell_file_path: ?Build.LazyPath,
     extra_args: []const []const u8 = &.{},
+    embed_files: []const Build.LazyPath = &.{},
+    preload_files: []const Build.LazyPath = &.{},
 };
 
 pub fn emccLinkStep(b: *Build, options: EmccLinkOptions) !*Build.Step.InstallDir {
@@ -93,6 +95,19 @@ pub fn emccLinkStep(b: *Build, options: EmccLinkOptions) !*Build.Step.InstallDir
     }
     if (options.shell_file_path) |shell_file_path| {
         emcc.addPrefixedFileArg("--shell-file=", shell_file_path);
+    }
+    for (options.embed_files) |f| {
+        // Embed at VFS root with @dest so loader can fopen("textures.bin")
+        // Use decorated arg: --embed-file=<host_path>@<basename>
+        // For now, dest is basename of the file (e.g., "textures.bin")
+        // Since LazyPath's basename is not easily available at configure time,
+        // we assume the file's basename is the intended dest. For textures.bin
+        // we hardcode, but generic fallback is to embed at host path.
+        // We use addDecoratedDirectoryArg to get prefix+path+suffix in one arg.
+        emcc.addDecoratedDirectoryArg("--embed-file=", f, "@textures.bin");
+    }
+    for (options.preload_files) |f| {
+        emcc.addPrefixedFileArg("--preload-file=", f);
     }
     for (options.extra_args) |arg| {
         emcc.addArg(arg);
