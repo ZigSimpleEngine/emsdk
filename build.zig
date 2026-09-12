@@ -3,8 +3,29 @@ const Build = std.Build;
 const ResolvedTarget = Build.ResolvedTarget;
 const OptimizeMode = std.builtin.OptimizeMode;
 
+pub const Options = struct {
+    /// The target architecture for which dependent modules will be built.
+    /// Kept for uniformity with the other `ZigSimpleEngine` packages
+    /// (like `rgfw.Options`); `emsdk` itself exposes no runtime module,
+    /// only build-time helpers, so these fields are currently unused
+    /// by `build` but let parents pass a common options bag around.
+    target: ?ResolvedTarget = null,
+    /// The optimization mode used to compile dependent modules.
+    /// See `target` — kept for API uniformity, no runtime module to apply to.
+    optimize: ?OptimizeMode = null,
+
+    pub fn initFromOptions(b: *Build) Options {
+        return .{
+            .target = b.standardTargetOptions(.{}),
+            .optimize = b.standardOptimizeOption(.{}),
+        };
+    }
+};
+
 pub fn build(b: *std.Build) void {
-    _ = b;
+    // Parse standard options for uniformity (`zig build --help` shows
+    // `-Dtarget`/`-Doptimize`), even though this helper package builds nothing.
+    _ = Options.initFromOptions(b);
 }
 
 pub fn getEmsdkPathFromEnv(b: *Build) []const u8 {
