@@ -1,7 +1,7 @@
 const std = @import("std");
 const Build = std.Build;
 const ResolvedTarget = Build.ResolvedTarget;
-const OptimizeMode = std.builtin.OptimizeMode;
+const Optimize = std.lang.Optimize;
 
 pub const Options = struct {
     /// The target architecture for which dependent modules will be built.
@@ -12,7 +12,7 @@ pub const Options = struct {
     target: ?ResolvedTarget = null,
     /// The optimization mode used to compile dependent modules.
     /// See `target` — kept for API uniformity, no runtime module to apply to.
-    optimize: ?OptimizeMode = null,
+    optimize: ?Optimize = null,
 
     pub fn initFromOptions(b: *Build) Options {
         return .{
@@ -61,7 +61,7 @@ pub fn Range(T: anytype) type {
 
 pub const EmccLinkOptions = struct {
     target: ResolvedTarget,
-    optimize: OptimizeMode,
+    optimize: Optimize,
     name: []const u8,
     lib_main: *Build.Step.Compile, // the actual Zig code must be compiled to a static link library
     emcc_path: []const u8,
@@ -82,11 +82,11 @@ pub const EmccLinkOptions = struct {
 pub fn emccLinkStep(b: *Build, options: EmccLinkOptions) !*Build.Step.InstallDir {
     const emcc = b.addSystemCommand(&.{options.emcc_path});
     emcc.setName("emcc"); // hide emcc path
-    if (options.optimize == .Debug) {
+    if (options.optimize == .debug) {
         emcc.addArgs(&.{ "-Og", "-sSAFE_HEAP=1", "-sSTACK_OVERFLOW_CHECK=1" });
     } else {
         emcc.addArg("-sASSERTIONS=0");
-        if (options.optimize == .ReleaseSmall) {
+        if (options.optimize == .small) {
             emcc.addArg("-Oz");
         } else {
             emcc.addArg("-O3");

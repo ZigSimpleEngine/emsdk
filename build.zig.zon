@@ -2,7 +2,7 @@
     .name = .emsdk,
     .version = "0.1.0",
     .fingerprint = 0xd3fae08480e2647e,
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{},
 
     .paths = .{
